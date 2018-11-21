@@ -10,13 +10,18 @@ import android.widget.ImageView;
 
 import com.example.android.android_me.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BodyPartFragment extends Fragment {
-
+  private static final String IMAGE_ID_LIST = "image_ids";
+  private static final String LIST_INDEX = "list_index";
   private static final String TAG = "BodyPartFragment";
-  private List<Integer> imageIds;
-  private int listIndex;
+
+  // Variables to store a list of image resources and the index of the image that this fragment
+  // displays
+  private List<Integer> mImageIds;
+  private int mListIndex;
 
   /** Mandatory empty constructor for the fragment manager to instantiate the fragment */
   public BodyPartFragment() {}
@@ -26,36 +31,52 @@ public class BodyPartFragment extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+    if (savedInstanceState != null) {
+      mImageIds = savedInstanceState.getIntegerArrayList(IMAGE_ID_LIST);
+      mListIndex = savedInstanceState.getInt(LIST_INDEX);
+    }
+
     // Inflate the Android-Me fragment layout
     View rootView = inflater.inflate(R.layout.fragment_body_part, container, false);
 
     // Get a reference to the ImageView in the fragment layout
     ImageView imageView = (ImageView) rootView.findViewById(R.id.body_part_image_view);
 
+    // If a list of image ids exists, set the image resource to the correct item in that list
     // Otherwise, create a Log statement that indicates that the list was not found
-    if (imageIds != null && imageIds.size() > 0 && listIndex > -1 && listIndex < imageIds.size()) {
-      imageView.setImageResource(imageIds.get(listIndex));
+    if (mImageIds != null) {
+      // Set the image resource to the list item at the stored index
+      imageView.setImageResource(mImageIds.get(mListIndex));
+      imageView.setOnClickListener(
+          (View view) -> {
+            if (mListIndex < mImageIds.size() - 1) {
+              mListIndex++;
+            } else {
+              mListIndex = 0;
+            }
+            imageView.setImageResource(mImageIds.get(mListIndex));
+          });
     } else {
-      Log.v(TAG, "Missing listIndex.");
+      Log.v(TAG, "This fragment has a null list of image id's");
     }
-
     // Return the rootView
     return rootView;
   }
 
-  public List<Integer> getImageIds() {
-    return imageIds;
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    outState.putIntegerArrayList(IMAGE_ID_LIST, (ArrayList<Integer>) mImageIds);
+    outState.putInt(LIST_INDEX, mListIndex);
   }
+
+  // Setter methods for keeping track of the list images this fragment can display and which image
+  // in the list is currently being displayed
 
   public void setImageIds(List<Integer> imageIds) {
-    this.imageIds = imageIds;
+    mImageIds = imageIds;
   }
 
-  public int getListIndex() {
-    return listIndex;
-  }
-
-  public void setListIndex(int listIndex) {
-    this.listIndex = listIndex;
+  public void setListIndex(int index) {
+    mListIndex = index;
   }
 }

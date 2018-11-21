@@ -16,14 +16,20 @@ public class AndroidMeActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_android_me);
 
-    // Create a new head BodyPartFragment
-    BodyPartFragment headFragment = new BodyPartFragment();
-    headFragment.setImageIds(AndroidImageAssets.getHeads());
-    headFragment.setListIndex(1);
+    if (savedInstanceState == null) {
+      FragmentManager fragmentManager = getSupportFragmentManager();
 
-    // Add the fragment to its container using a FragmentManager and a Transaction
-    FragmentManager fragmentManager = getSupportFragmentManager();
+      BodyPartFragment headFragment = new BodyPartFragment();
+      headFragment.setImageIds(AndroidImageAssets.getHeads());
+      fragmentManager.beginTransaction().add(R.id.head_container, headFragment).commit();
 
-    fragmentManager.beginTransaction().add(R.id.head_container, headFragment).commit();
+      BodyPartFragment bodyFragment = new BodyPartFragment();
+      bodyFragment.setImageIds(AndroidImageAssets.getBodies());
+      fragmentManager.beginTransaction().add(R.id.body_container, bodyFragment).commit();
+
+      BodyPartFragment legFragment = new BodyPartFragment();
+      legFragment.setImageIds(AndroidImageAssets.getLegs());
+      fragmentManager.beginTransaction().add(R.id.leg_container, legFragment).commit();
+    }
   }
 }
